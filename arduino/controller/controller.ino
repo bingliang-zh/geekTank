@@ -24,7 +24,7 @@ void benchmarkSetup(){
   for(i = 0; i < 3; i++){
     xSum += analogRead(axisX);
     ySum += analogRead(axisY);
-    delay(100);
+    delay(10);
   }
   benchmarkX = xSum / i;
   benchmarkY = ySum / i;
@@ -76,7 +76,11 @@ void loop(){
 
   int xValue = analogRead(axisX);
   int yValue = analogRead(axisY);
-  driveTracks(xValue, yValue);  
+  driveTracks(xValue, yValue);
+
+//  Serial.print(xValue-benchmarkX);
+//  Serial.print("  ");
+//  Serial.println(yValue-benchmarkY);  
 }
 
 void driveTracks(int xValue, int yValue){
