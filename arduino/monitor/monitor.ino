@@ -12,7 +12,7 @@
 
 //#include <Servo.h> 
 int Left_motor_P=9;     //左电机正极
-int Left_motor_N=8;     //左电机负极
+int Left_motor_N=6;     //左电机负极
 
 int Right_motor_P=10;    // 右电机正极
 int Right_motor_N=11;    // 右电机负极
@@ -20,7 +20,7 @@ int Right_motor_N=11;    // 右电机负极
 #define Max_deg  120
 #define Min_deg  60
 
-int servopin = 3;//定义数字接口5 连接伺服舵机信号线
+int servopin = 5;//定义数字接口5 连接伺服舵机信号线
 int myangle;//定义角度变量
 int pulsewidth;//定义脉宽变量
 int val;
@@ -50,7 +50,6 @@ void Set_deg_fast(unsigned char deg_in){
 void setup(){
   Serial.begin(9600);     // 初始化串口
   Serial.println("Setup().");
-  Serial1.begin(9600);     // 初始化串口
 
   //初始化电机驱动IO为输出方式
   pinMode(Left_motor_P,OUTPUT);   // 腳位 8 (PWM)
@@ -167,9 +166,9 @@ void Brake(int f){
 }  
 
 void Judge(void){
-  if(Serial1.available()>0){
+  if(Serial.available()>0){
     Serial.print("Serial1 available!!!!\n");
-    currentInput = Serial1.read();
+    currentInput = Serial.read();
     Serial.println(currentInput);
     if((lastInput == currentInput)||(currentInput == 'S')||(currentInput == 's')){
       Action(currentInput);//choose any for process
