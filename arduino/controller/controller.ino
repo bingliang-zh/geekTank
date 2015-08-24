@@ -93,24 +93,25 @@ void driveTracks(int xValue, int yValue){
       lTransNol = 2*yNol + xNol;
     }
   }
-  lTrans = lTransNol * 255;
-  rTrans = rTransNol * 255;
-  Serial.print(xNol);
-  Serial.print("  ");
-  Serial.print(yNol);
-//  Serial.print("  ");
-//  Serial.print(lTransNol);
-//  Serial.print("  ");
-//  Serial.println(rTransNol);
-  Serial.print("  ");
-  Serial.print(lTrans);
-  Serial.print("  ");
-  Serial.println(lTrans);
+  lTrans = lTransNol * 127;
+  rTrans = rTransNol * 127;
+  sendOrder('T');
+}
+
+void sendOrder(char param){
+  switch(param){
+    case 'T'://履带运动
+      Serial.print("TT");
+      Serial.write(lTrans);
+      Serial.write(rTrans);
+      Serial.print("\n");
+      break;
+    default:break;
+  }
 }
 
 void setup(){
   Serial.begin(9600);
-  //Serial.println("------------setup()-------------");
   benchmarkSetup();
 }
 
@@ -156,9 +157,6 @@ void loop(){
   int yValue = analogRead(axisY);
   driveTracks(xValue, yValue);
 
-//  Serial.print(xValue-benchmarkX);
-//  Serial.print("  ");
-//  Serial.println(yValue-benchmarkY);  
 }
 
 
