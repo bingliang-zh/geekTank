@@ -93,13 +93,19 @@ void driveTracks(int xValue, int yValue){
       lTransNol = 2*yNol + xNol;
     }
   }
+  lTrans = lTransNol * 255;
+  rTrans = rTransNol * 255;
   Serial.print(xNol);
   Serial.print("  ");
   Serial.print(yNol);
+//  Serial.print("  ");
+//  Serial.print(lTransNol);
+//  Serial.print("  ");
+//  Serial.println(rTransNol);
   Serial.print("  ");
-  Serial.print(lTransNol);
+  Serial.print(lTrans);
   Serial.print("  ");
-  Serial.println(rTransNol);
+  Serial.println(lTrans);
 }
 
 void setup(){
