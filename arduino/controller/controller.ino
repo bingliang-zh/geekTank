@@ -10,8 +10,22 @@ int axisY = A1;
 int stickBtn = 6;
 
 //特定功能键
-int stopBtn = 3;
+int stopBtn        = leftBtn;
+int stickModeBtn   = upBtn;
+int holdSpeedBtn   = rightBtn;
+int disSensorBtn   = downBtn;
+int camResetBtn    = stickBtn;
+
+//Last Value
+int lstVals[7] = {1,1,1,1,1,1,1};
+//Recent Value
+int rctVals[7];
+
+//模式开关
 bool isStopBtnPressed = false;
+int stickMode   = 0;//0为控制履带，1为控制相机
+int speedMode   = 0;//0为变速，1为匀速
+int sensorMode  = 0;//0为检测距离，1为纯手动
 
 //基准量
 int benchmarkX = 512;
@@ -115,48 +129,47 @@ void setup(){
   benchmarkSetup();
 }
 
-//公用临时变量
-int sensorValue;
-
 void loop(){
-  sensorValue = digitalRead(stopBtn);
-  if (sensorValue == 0||isStopBtnPressed == true){
+  for(int i = 0; i < 7; i++){
+    rctVals[i] = digitalRead(i);
+  }
+  if(rctVals[stopBtn] == 0||isStopBtnPressed == true){
     //按下停止按钮后改变判断值，进入死循环，只有重启可以解除该状态
     isStopBtnPressed = true;
+    driveTracks(0, 0);//关履带动力
     return;
   }
-  
-  sensorValue = digitalRead(rightBtn);
-  if (sensorValue == 0){
-    //按下了摄像头居中按钮
-    //...
+  if(isBtnReleased(stickModeBtn)){
+    //摇杆模式切换按键
   }
-  else{
-    int upValue = digitalRead(upBtn);
-    int downValue = digitalRead(downBtn);
-    if(upValue != downValue){
-      //都只有一个按下一个不按下时才进入函数体
-      if(upValue == 0){
-        //按下了上按键
-        //...
-      }
-      else{
-        //按下了下按键
-        //...
-      }
-    }
+  if(isBtnReleased(holdSpeedBtn)){
+    //保持匀速按键
+  }
+  if(isBtnReleased(disSensorBtn)){
+    //防撞开关
+  }
+  if(isBtnReleased(camResetBtn)){
+    //相机复位开关
   }
   
-  sensorValue = digitalRead(stickBtn);
-  if (sensorValue == 0){
-    //按下了摇杆按钮
-    //...
-  }
-
   int xValue = analogRead(axisX);
   int yValue = analogRead(axisY);
   driveTracks(xValue, yValue);
 
+  updateBtnValue();
 }
 
+void updateBtnValue(){
+  for(int i = 0; i < 7; i++){
+    lstVals[i] = rctVals[i];
+  }
+}
+
+bool isBtnReleased(int btn){
+  if(lstVals[btn] == 0 && rctVals[btn] == 1){
+    return true;
+  }else{
+    return false;
+  }
+}
 
