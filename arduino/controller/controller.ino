@@ -17,7 +17,7 @@ int disSensorBtn   = downBtn;
 int camResetBtn    = stickBtn;
 
 //Last Value
-int lstVals[7] = {1,1,1,1,1,1,1};
+int lstVals[7];
 //Recent Value
 int rctVals[7];
 
@@ -120,12 +120,16 @@ void sendOrder(char param){
       Serial.write(rTrans);
       Serial.print("\n");
       break;
+    case 'F': Serial.print("mm");break;           //相机居中
     default:break;
   }
 }
 
 void setup(){
   Serial.begin(9600);
+  for(int i = 0; i < 7; i++){
+    lstVals[i] = 1;
+  }
   benchmarkSetup();
 }
 
@@ -141,21 +145,30 @@ void loop(){
   }
   if(isBtnReleased(stickModeBtn)){
     //摇杆模式切换按键
+    stickMode++;
+    stickMode %= 2;
   }
   if(isBtnReleased(holdSpeedBtn)){
     //保持匀速按键
+    speedMode++;
+    speedMode %= 2;
   }
   if(isBtnReleased(disSensorBtn)){
     //防撞开关
+    sensorMode++;
+    sensorMode %= 2;
   }
   if(isBtnReleased(camResetBtn)){
     //相机复位开关
+    sendOrder('F');
+  }
+
+  if(stickMode==0){
+    int xValue = analogRead(axisX);
+    int yValue = analogRead(axisY);
+    driveTracks(xValue, yValue);
   }
   
-  int xValue = analogRead(axisX);
-  int yValue = analogRead(axisY);
-  driveTracks(xValue, yValue);
-
   updateBtnValue();
 }
 
