@@ -28,6 +28,10 @@ unsigned char Continue_flag = 0;//舵机持续转动标记
 unsigned char i=0;
 unsigned char temp=0;
 unsigned char deg = 90;
+//履带传输值
+int lTrans;
+int rTrans;
+
 void servopulse(int servopin,int myangle){//定义一个脉冲函数
   pulsewidth=(myangle*11)+500;//将角度转化为500-2480 的脉宽值
   digitalWrite(servopin,HIGH);//将舵机接口电平至高
@@ -101,10 +105,39 @@ void Action(char ctrl_val){
     case 'm': deg=90;Set_deg(deg);break;                      //0x6D==109
     case 'l': if(deg<=Max_deg) {deg += 5; Set_deg_fast(deg);}Continue_flag = 2;break; //0x6C==108
     case 's': Continue_flag = 0;break;//0x73==115
+    case 'T': 
+      lTrans = Serial.read();
+      rTrans = Serial.read();
+      driveTracks(lTrans, rTrans);
+      break;
     default: break;
   }   
 }
 
+void driveTracks(int l, int r){
+  if(l >= 0){
+    digitalWrite(Left_motor_P,HIGH);//左轮前进
+    digitalWrite(Left_motor_N,LOW);
+    analogWrite(Left_motor_P,255);//PWM比例0~255调速，左右轮差异略增减
+    analogWrite(Left_motor_N,0);
+  }else{
+    digitalWrite(Left_motor_P,LOW);//左轮后退
+    digitalWrite(Left_motor_N,HIGH);
+    analogWrite(Left_motor_P,0);//PWM比例0~255调速，左右轮差异略增减
+    analogWrite(Left_motor_N,255);
+  }
+  if(r >= 0){
+    digitalWrite(Right_motor_P,LOW);  //右轮后退
+    digitalWrite(Right_motor_N,HIGH);
+    analogWrite(Right_motor_P,0);
+    analogWrite(Right_motor_N,255);//PWM比例0~255调速
+  }else{
+    digitalWrite(Right_motor_P,HIGH);  //右轮后退
+    digitalWrite(Right_motor_N,LOW);
+    analogWrite(Right_motor_P,255);
+    analogWrite(Right_motor_N,0);//PWM比例0~255调速
+  }
+}
 
  //快速右转弯
 void Fast_TurnR(int a){
