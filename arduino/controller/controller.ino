@@ -30,7 +30,7 @@ int sensorMode  = 0;//0为检测距离，1为纯手动
 //基准量
 int benchmarkX = 512;
 int benchmarkY = 512;
-int allowError = 5;//电涌误差
+int allowError = 50;//电涌误差
 
 void benchmarkSetup(){
   int i;

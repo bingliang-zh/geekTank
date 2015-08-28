@@ -173,6 +173,7 @@ String str;
 void Judge(void){
   if(Serial.available() > 0){
     str = Serial.readStringUntil('\n');
+    Serial.println(str);
   }
   if(str.length() >= 4 && str.substring(0, 3) == "CMD"){
     char cmd = str[3];
@@ -199,6 +200,9 @@ void Judge(void){
 }
 
 void driveTracks(int l, int r){
+  Serial.print(l);
+  Serial.print("     ");
+  Serial.println(r);
   if(l >= 0){
     digitalWrite(Left_motor_P,HIGH);//左轮前进
     digitalWrite(Left_motor_N,LOW);
