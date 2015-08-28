@@ -113,16 +113,17 @@ void driveTracks(int xValue, int yValue){
 }
 
 void sendOrder(char param){
+  Serial.print("CMD");
+  Serial.print(param);
   switch(param){
     case 'T'://履带运动
-      Serial.print("TT");
       Serial.write(lTrans);
       Serial.write(rTrans);
-      Serial.print("\n");
       break;
     case 'F': Serial.print("mm");break;           //相机居中
     default:break;
   }
+  Serial.print("\n");
 }
 
 void setup(){

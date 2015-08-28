@@ -105,38 +105,8 @@ void Action(char ctrl_val){
     case 'm': deg=90;Set_deg(deg);break;                      //0x6D==109
     case 'l': if(deg<=Max_deg) {deg += 5; Set_deg_fast(deg);}Continue_flag = 2;break; //0x6C==108
     case 's': Continue_flag = 0;break;//0x73==115
-    case 'T': 
-      lTrans = Serial.read();
-      rTrans = Serial.read();
-      driveTracks(lTrans, rTrans);
-      break;
     default: break;
   }   
-}
-
-void driveTracks(int l, int r){
-  if(l >= 0){
-    digitalWrite(Left_motor_P,HIGH);//左轮前进
-    digitalWrite(Left_motor_N,LOW);
-    analogWrite(Left_motor_P,255);//PWM比例0~255调速，左右轮差异略增减
-    analogWrite(Left_motor_N,0);
-  }else{
-    digitalWrite(Left_motor_P,LOW);//左轮后退
-    digitalWrite(Left_motor_N,HIGH);
-    analogWrite(Left_motor_P,0);//PWM比例0~255调速，左右轮差异略增减
-    analogWrite(Left_motor_N,255);
-  }
-  if(r >= 0){
-    digitalWrite(Right_motor_P,LOW);  //右轮后退
-    digitalWrite(Right_motor_N,HIGH);
-    analogWrite(Right_motor_P,0);
-    analogWrite(Right_motor_N,255);//PWM比例0~255调速
-  }else{
-    digitalWrite(Right_motor_P,HIGH);  //右轮后退
-    digitalWrite(Right_motor_N,LOW);
-    analogWrite(Right_motor_P,255);
-    analogWrite(Right_motor_N,0);//PWM比例0~255调速
-  }
 }
 
  //快速右转弯
@@ -198,17 +168,58 @@ void Brake(int f){
   //delay(f * 100);//执行时间，可以调整  
 }  
 
+String str;
+
 void Judge(void){
-  if(Serial.available()>0){
-    Serial.print("Serial1 available!!!!\n");
-    currentInput = Serial.read();
-    Serial.println(currentInput);
-    if((lastInput == currentInput)||(currentInput == 'S')||(currentInput == 's')){
-      Action(currentInput);//choose any for process
+  if(Serial.available() > 0){
+    str = Serial.readStringUntil('\n');
+  }
+  if(str.length() >= 4 && str.substring(0, 3) == "CMD"){
+    char cmd = str[3];
+    switch(cmd){
+      case 'T':
+        if(str.length()==6){
+          driveTracks(int(str[4]),int(str[5]));
+        }
+        break;
+      default: break;
     }
-    else{
-      lastInput = currentInput;//updata
-    }
+  }
+//  if(Serial.available()>0){
+//    Serial.print("Serial1 available!!!!\n");
+//    currentInput = Serial.read();
+//    Serial.println(currentInput);
+//    if((lastInput == currentInput)||(currentInput == 'S')||(currentInput == 's')){
+//      Action(currentInput);//choose any for process
+//    }
+//    else{
+//      lastInput = currentInput;//updata
+//    }
+//  }
+}
+
+void driveTracks(int l, int r){
+  if(l >= 0){
+    digitalWrite(Left_motor_P,HIGH);//左轮前进
+    digitalWrite(Left_motor_N,LOW);
+    analogWrite(Left_motor_P,255);//PWM比例0~255调速，左右轮差异略增减
+    analogWrite(Left_motor_N,0);
+  }else{
+    digitalWrite(Left_motor_P,LOW);//左轮后退
+    digitalWrite(Left_motor_N,HIGH);
+    analogWrite(Left_motor_P,0);//PWM比例0~255调速，左右轮差异略增减
+    analogWrite(Left_motor_N,255);
+  }
+  if(r >= 0){
+    digitalWrite(Right_motor_P,LOW);  //右轮后退
+    digitalWrite(Right_motor_N,HIGH);
+    analogWrite(Right_motor_P,0);
+    analogWrite(Right_motor_N,255);//PWM比例0~255调速
+  }else{
+    digitalWrite(Right_motor_P,HIGH);  //右轮后退
+    digitalWrite(Right_motor_N,LOW);
+    analogWrite(Right_motor_P,255);
+    analogWrite(Right_motor_N,0);//PWM比例0~255调速
   }
 }
 
