@@ -183,47 +183,43 @@ void Judge(void){
           driveTracks(int(str[4]),int(str[5]));
         }
         break;
+      case 'B': Brake(1);break;
       default: break;
     }
   }
-//  if(Serial.available()>0){
-//    Serial.print("Serial1 available!!!!\n");
-//    currentInput = Serial.read();
-//    Serial.println(currentInput);
-//    if((lastInput == currentInput)||(currentInput == 'S')||(currentInput == 's')){
-//      Action(currentInput);//choose any for process
-//    }
-//    else{
-//      lastInput = currentInput;//updata
-//    }
-//  }
 }
 
 void driveTracks(int l, int r){
   Serial.print(l);
   Serial.print("     ");
   Serial.println(r);
-  if(l >= 0){
+  if(l > 0){
     digitalWrite(Left_motor_P,HIGH);//左轮前进
     digitalWrite(Left_motor_N,LOW);
-    analogWrite(Left_motor_P,255);//PWM比例0~255调速，左右轮差异略增减
+    analogWrite(Left_motor_P,2 * l);//PWM比例0~255调速，左右轮差异略增减
     analogWrite(Left_motor_N,0);
-  }else{
+  }else if(l < 0){
     digitalWrite(Left_motor_P,LOW);//左轮后退
     digitalWrite(Left_motor_N,HIGH);
     analogWrite(Left_motor_P,0);//PWM比例0~255调速，左右轮差异略增减
-    analogWrite(Left_motor_N,255);
+    analogWrite(Left_motor_N,-2 * l);
+  }else{
+    digitalWrite(Left_motor_P,LOW);
+    digitalWrite(Left_motor_N,LOW);
   }
-  if(r >= 0){
+  if(r > 0){
     digitalWrite(Right_motor_P,LOW);  //右轮后退
     digitalWrite(Right_motor_N,HIGH);
     analogWrite(Right_motor_P,0);
-    analogWrite(Right_motor_N,255);//PWM比例0~255调速
-  }else{
+    analogWrite(Right_motor_N,2 * r);//PWM比例0~255调速
+  }else if(r < 0){
     digitalWrite(Right_motor_P,HIGH);  //右轮后退
     digitalWrite(Right_motor_N,LOW);
-    analogWrite(Right_motor_P,255);
+    analogWrite(Right_motor_P,-2 * r);
     analogWrite(Right_motor_N,0);//PWM比例0~255调速
+  }else{
+    digitalWrite(Right_motor_P,LOW);
+    digitalWrite(Right_motor_N,LOW);
   }
 }
 

@@ -133,6 +133,7 @@ void sendOrder(char param){
     default:break;
   }
   Serial.print("\n");
+  delay(20);
 }
 
 void setup(){
