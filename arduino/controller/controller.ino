@@ -30,7 +30,8 @@ int sensorMode  = 0;//0为检测距离，1为纯手动
 //基准量
 int benchmarkX = 512;
 int benchmarkY = 512;
-int allowError = 50;//电涌误差
+int allowError = 10;//电涌误差
+bool sendBreaks  = true;
 
 void benchmarkSetup(){
   int i;
@@ -61,7 +62,14 @@ void driveTracks(int xValue, int yValue){
   int yDValue = yValue - benchmarkY;
   if(abs(xDValue) < allowError && abs(yDValue) < allowError){
     //在基准上下误差内
+    if(sendBreaks){
+      sendOrder('B');
+      sendOrder('B');
+      sendBreaks = false;
+    }
     return;
+  }else{
+    sendBreaks = true;
   }
   if(xDValue >= 0){
     xNol = 1.0 * xDValue / (1023-benchmarkX);
@@ -120,6 +128,7 @@ void sendOrder(char param){
       Serial.write(lTrans);
       Serial.write(rTrans);
       break;
+    case 'B': break;
     case 'F': Serial.print("mm");break;           //相机居中
     default:break;
   }
