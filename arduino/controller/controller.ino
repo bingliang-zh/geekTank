@@ -56,7 +56,7 @@ double rTransNol;
 int lTrans;
 int rTrans;
 
-//根据模拟量输出值
+//根据模拟量输出履带对应速度
 void driveTracks(int xValue, int yValue){
   int xDValue = xValue - benchmarkX;
   int yDValue = yValue - benchmarkY;
@@ -150,8 +150,11 @@ void loop(){
   }
   if(rctVals[stopBtn] == 0||isStopBtnPressed == true){
     //按下停止按钮后改变判断值，进入死循环，只有重启可以解除该状态
-    isStopBtnPressed = true;
-    driveTracks(0, 0);//关履带动力
+    if(rctVals[stopBtn] == 0){
+      isStopBtnPressed = true;
+      sendOrder('B');//刹车
+      sendOrder('B');
+    }
     return;
   }
   if(isBtnReleased(stickModeBtn)){
