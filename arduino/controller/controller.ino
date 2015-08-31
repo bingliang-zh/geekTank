@@ -124,12 +124,12 @@ void sendOrder(char param){
   Serial.print("CMD");
   Serial.print(param);
   switch(param){
-    case 'T'://履带运动
+    case 'T':                   //履带运动
       Serial.write(lTrans);
       Serial.write(rTrans);
       break;
-    case 'B': break;
-    case 'F': Serial.print("mm");break;           //相机居中
+    case 'B': break;            //履带刹车
+    case 'F': ;break;           //相机复位
     default:break;
   }
   Serial.print("\n");
@@ -177,11 +177,17 @@ void loop(){
     sendOrder('F');
   }
 
-  if(stickMode==0){
+  if(stickMode == 0){
     int xValue = analogRead(axisX);
     int yValue = analogRead(axisY);
-    driveTracks(xValue, yValue);
+    if(speedMode==0){
+      driveTracks(xValue, yValue);
+    }
+  }else if(stickMode == 1){
+    int yValue = analogRead(axisY);
   }
+
+  
   
   updateBtnValue();
 }
