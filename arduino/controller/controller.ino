@@ -25,7 +25,7 @@ int rctVals[7];
 bool isStopBtnPressed = false;
 int stickMode   = 0;//0为控制履带，1为控制相机
 int speedMode   = 0;//0为变速，1为匀速
-int sensorMode  = 0;//0为检测距离，1为纯手动
+//int sensorMode  = 0;//0为检测距离，1为纯手动
 
 //基准量
 int benchmarkX = 512;
@@ -132,6 +132,7 @@ void sendOrder(char param){
     case 'F': break;            //相机复位 focus
     case 'U': break;            //相机抬头 up
     case 'D': break;            //相机低头 down
+    case 'S': break;            //切换距离感应开关 sensor
     default:break;
   }
   Serial.print("\n");
@@ -163,20 +164,25 @@ void loop(){
     //摇杆模式切换按键
     stickMode++;
     stickMode %= 2;
+    delay(200);
   }
   if(isBtnReleased(holdSpeedBtn)){
     //保持匀速按键
     speedMode++;
     speedMode %= 2;
+    delay(200);
   }
   if(isBtnReleased(disSensorBtn)){
     //防撞开关
-    sensorMode++;
-    sensorMode %= 2;
+//    sensorMode++;
+//    sensorMode %= 2;
+    sendOrder('S');
+    delay(200);
   }
   if(isBtnReleased(camResetBtn)){
     //相机复位开关
     sendOrder('F');
+    delay(200);
   }
 
   if(stickMode == 0){
@@ -194,8 +200,6 @@ void loop(){
       sendOrder('D');
     }
   }
-
-  
   
   updateBtnValue();
 }
