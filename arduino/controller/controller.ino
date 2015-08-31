@@ -124,12 +124,14 @@ void sendOrder(char param){
   Serial.print("CMD");
   Serial.print(param);
   switch(param){
-    case 'T':                   //履带运动
+    case 'T':                   //履带运动 track
       Serial.write(lTrans);
       Serial.write(rTrans);
       break;
-    case 'B': break;            //履带刹车
-    case 'F': ;break;           //相机复位
+    case 'B': break;            //履带刹车 break
+    case 'F': break;            //相机复位 focus
+    case 'U': break;            //相机抬头 up
+    case 'D': break;            //相机低头 down
     default:break;
   }
   Serial.print("\n");
@@ -185,6 +187,12 @@ void loop(){
     }
   }else if(stickMode == 1){
     int yValue = analogRead(axisY);
+    int diff = yValue - benchmarkY;
+    if(diff > allowError){
+      sendOrder('U');
+    }else if(diff < -allowError){
+      sendOrder('D');
+    }
   }
 
   
