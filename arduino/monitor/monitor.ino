@@ -18,7 +18,7 @@ int Right_motor_P=10;    // 右电机正极
 int Right_motor_N=11;    // 右电机负极
 
 #define Max_deg  120
-#define Min_deg  60
+#define Min_deg  75
 
 int servopin = 5;//定义数字接口5 连接伺服舵机信号线
 int myangle;//定义角度变量
@@ -28,6 +28,7 @@ unsigned char Continue_flag = 0;//舵机持续转动标记
 unsigned char i=0;
 unsigned char temp=0;
 unsigned char deg = 90;
+int sensorMode = 0;//0为检测距离，1为纯手动
 //履带传输值
 int lTrans;
 int rTrans;
@@ -181,9 +182,20 @@ void Judge(void){
       case 'T':
         if(str.length()==6){
           driveTracks(int(str[4]),int(str[5]));
-        }
-        break;
-      case 'B': Brake(1);break;
+        }break;
+      case 'B': Brake(1);break;                         //履带刹车 break
+      case 'F': deg = 90;Set_deg(deg);break;            //相机复位 focus
+      case 'D':                                         //相机低头 down
+        if(deg>=Min_deg){
+          deg -= 2;
+          Set_deg_fast(deg);
+        }Continue_flag = 0;break;
+      case 'U':                                         //相机抬头 up
+        if(deg<=Max_deg){
+          deg += 2;
+          Set_deg_fast(deg);
+        }Continue_flag = 0;break;
+      case 'S': sensorMode++;sensorMode%=2;break;       //切换距离感应开关 sensor
       default: break;
     }
   }
