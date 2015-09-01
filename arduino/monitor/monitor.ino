@@ -29,6 +29,8 @@ unsigned char i=0;
 unsigned char temp=0;
 unsigned char deg = 90;
 int sensorMode = 0;//0为检测距离，1为纯手动
+int sensorInputPin = 3;//超声波信号接收接口
+int sensorOutputPin = 2;//超声波信号发射接口
 //履带传输值
 int lTrans;
 int rTrans;
@@ -65,6 +67,10 @@ void setup(){
   pinMode(servopin,OUTPUT);//设定舵机接口为输出接口
   //digitalWrite(servopin,LOW);   //拉低舵机控制脚
   pinMode(13, OUTPUT);
+
+  pinMode(sensorInputPin, INPUT);
+  pinMode(sensorOutputPin, OUTPUT);
+  
   Set_deg(deg);
   Brake(1);
   for(i=0;i<4 ;i++)
@@ -87,6 +93,8 @@ void loop(){
     case 2:if(deg<=Max_deg) deg += 5; Set_deg_fast(deg);break;//turn left
     default: break;
   }
+  Serial.print("Distance: ");
+  Serial.println(getDistance());
 }
 
 void Action(char ctrl_val){
@@ -235,4 +243,15 @@ void driveTracks(int l, int r){
   }
 }
 
+double getDistance(){
+  digitalWrite(sensorOutputPin, LOW); // 使发出发出超声波信号接口低电平2μs
+  delayMicroseconds(2);
+  digitalWrite(sensorOutputPin, HIGH); // 使发出发出超声波信号接口高电平10μs，这里是至少10μs
+  delayMicroseconds(10);
+  digitalWrite(sensorOutputPin, LOW); // 保持发出超声波信号接口低电平
+  double distance = pulseIn(sensorInputPin, HIGH); // 读出脉冲时间
+  distance= distance/58.0; // 将脉冲时间转化为距离（单位：厘米）
+//  Serial.println(distance); //输出距离值
+  return distance;
+}
 
