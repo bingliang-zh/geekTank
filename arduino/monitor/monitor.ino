@@ -97,77 +97,6 @@ void loop(){
   Serial.println(getDistance());
 }
 
-void Action(char ctrl_val){
-  switch(ctrl_val){
-    //move                           //hex  dec
-    case 'L': Fast_TurnL(1);break;   //0x4C==76
-    case 'R': Fast_TurnR(1);break;   //0x52==82
-    case 'F': advance(1);break;      //0x46==70
-    case 'B': Reverse(1);break;      //0x42==66
-    case '1': break;
-    case '2': break;
-    case '3': break;
-    case '4': break;
-    case 'S': Brake(1);break;        //0x53==83
-    //servo 
-    case 'r': if(deg>=Min_deg) {deg -= 5; Set_deg_fast(deg);} Continue_flag = 1;break;  //0x72==114
-    case 'm': deg=90;Set_deg(deg);break;                      //0x6D==109
-    case 'l': if(deg<=Max_deg) {deg += 5; Set_deg_fast(deg);}Continue_flag = 2;break; //0x6C==108
-    case 's': Continue_flag = 0;break;//0x73==115
-    default: break;
-  }   
-}
-
- //快速右转弯
-void Fast_TurnR(int a){
-  digitalWrite(Right_motor_P,HIGH);  // 右电机前进
-  digitalWrite(Right_motor_N,LOW);     
-  analogWrite(Right_motor_P,255);//PWM比例0~255调速，左右轮差异略增减
-  analogWrite(Right_motor_N,0);
-  digitalWrite(Left_motor_P,HIGH);  // 左电机前进
-  digitalWrite(Left_motor_N,LOW);
-  analogWrite(Left_motor_P,255);//PWM比例0~255调速，左右轮差异略增减
-  analogWrite(Left_motor_N,0);
-  //delay(a * 100);   //执行时间，可以调整  
-}
-
-//快速左转弯
-void Fast_TurnL(int g){
-  digitalWrite(Right_motor_P,LOW);  //右轮后退
-  digitalWrite(Right_motor_N,HIGH);
-  analogWrite(Right_motor_P,0);
-  analogWrite(Right_motor_N,255);//PWM比例0~255调速
-  digitalWrite(Left_motor_P,LOW);  //左轮后退
-  digitalWrite(Left_motor_N,HIGH);
-  analogWrite(Left_motor_P,0);
-  analogWrite(Left_motor_N,255);//PWM比例0~255调速
-  //delay(g * 100);     //执行时间，可以调整  
-}
-
- // 前進，走偏请调整左右PWM 
-void advance(int d){
-  digitalWrite(Right_motor_P,LOW);  //右轮后退
-  digitalWrite(Right_motor_N,HIGH);
-  analogWrite(Right_motor_P,0);
-  analogWrite(Right_motor_N,255);//PWM比例0~255调速
-  digitalWrite(Left_motor_P,HIGH);//左轮前进
-  digitalWrite(Left_motor_N,LOW);  
-  analogWrite(Left_motor_P,255);//PWM比例0~255调速，左右轮差异略增减
-  analogWrite(Left_motor_N,0);
-  //delay(d * 10);//执行时间，可以调整  
-}
-//後退
-void Reverse(int e){
-  digitalWrite(Right_motor_P,HIGH);//右轮前进
-  digitalWrite(Right_motor_N,LOW);   
-  analogWrite(Right_motor_P,255);//PWM比例0~255调速，左右轮差异略增减
-  analogWrite(Right_motor_N,0);
-  digitalWrite(Left_motor_P,LOW);   //左轮后退
-  digitalWrite(Left_motor_N,HIGH);
-  analogWrite(Left_motor_P,0);
-  analogWrite(Left_motor_N,255);//PWM比例0~255调速
-  //delay(e * 10);//执行时间，可以调整  
-}    
 //刹车，停车
 void Brake(int f){
   digitalWrite(Right_motor_P,LOW);
@@ -210,9 +139,13 @@ void Judge(void){
 }
 
 void driveTracks(int l, int r){
-  Serial.print(l);
-  Serial.print("     ");
-  Serial.println(r);
+//  Serial.print(l);
+//  Serial.print("     ");
+//  Serial.println(r);
+  if(sensorMode == 0 && getDistance() < 20.0){
+    Brake(1);
+    return;
+  }
   if(l > 0){
     digitalWrite(Left_motor_P,HIGH);//左轮前进
     digitalWrite(Left_motor_N,LOW);
