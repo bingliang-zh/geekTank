@@ -72,7 +72,7 @@ void setup(){
   pinMode(sensorOutputPin, OUTPUT);
   
   Set_deg(deg);
-  Brake(1);
+  Brake();
   for(i=0;i<4 ;i++)
   {
     digitalWrite(13, LOW);
@@ -93,17 +93,14 @@ void loop(){
     case 2:if(deg<=Max_deg) deg += 5; Set_deg_fast(deg);break;//turn left
     default: break;
   }
-  Serial.print("Distance: ");
-  Serial.println(getDistance());
 }
 
 //刹车，停车
-void Brake(int f){
+void Brake(){
   digitalWrite(Right_motor_P,LOW);
   digitalWrite(Right_motor_N,LOW);
   digitalWrite(Left_motor_P,LOW);
   digitalWrite(Left_motor_N,LOW);
-  //delay(f * 100);//执行时间，可以调整  
 }  
 
 String str;
@@ -120,7 +117,7 @@ void Judge(void){
         if(str.length()==6){
           driveTracks(int(str[4]),int(str[5]));
         }break;
-      case 'B': Brake(1);break;                         //履带刹车 break
+      case 'B': Brake();break;                         //履带刹车 break
       case 'F': deg = 90;Set_deg(deg);break;            //相机复位 focus
       case 'D':                                         //相机低头 down
         if(deg>=Min_deg){
@@ -139,12 +136,11 @@ void Judge(void){
 }
 
 void driveTracks(int l, int r){
-//  Serial.print(l);
-//  Serial.print("     ");
-//  Serial.println(r);
-  if(sensorMode == 0 && getDistance() < 20.0){
-    Brake(1);
-    return;
+  if(sensorMode == 0){
+    if(getDistance() < 20.0){
+      Brake();
+      return;
+    }
   }
   if(l > 0){
     digitalWrite(Left_motor_P,HIGH);//左轮前进
@@ -182,9 +178,9 @@ double getDistance(){
   digitalWrite(sensorOutputPin, HIGH); // 使发出发出超声波信号接口高电平10μs，这里是至少10μs
   delayMicroseconds(10);
   digitalWrite(sensorOutputPin, LOW); // 保持发出超声波信号接口低电平
-  double distance = pulseIn(sensorInputPin, HIGH); // 读出脉冲时间
+  double distance = pulseIn(sensorInputPin, HIGH, 6); // 读出脉冲时间 上限6ms约为1m
   distance= distance/58.0; // 将脉冲时间转化为距离（单位：厘米）
-//  Serial.println(distance); //输出距离值
+  Serial.println(distance); //输出距离值
   return distance;
 }
 
