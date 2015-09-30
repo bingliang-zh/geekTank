@@ -19,12 +19,12 @@ int Right_motor_N=11;    // 右电机负极
 
 #define Max_deg  120
 #define Min_deg  75
+#define Step_deg 2
 
 int servopin = 5;//定义数字接口5 连接伺服舵机信号线
 int myangle;//定义角度变量
 int pulsewidth;//定义脉宽变量
 int val;
-unsigned char Continue_flag = 0;//舵机持续转动标记
 unsigned char i=0;
 unsigned char temp=0;
 unsigned char deg = 90;
@@ -86,13 +86,6 @@ void setup(){
 char lastInput=0,currentInput=0;
 void loop(){
   Judge();
-  //舵机持续转动
-  switch(Continue_flag){
-    case 0:break;//stop
-    case 1:if(deg>=Min_deg) deg -= 5; Set_deg_fast(deg);break;//turn right
-    case 2:if(deg<=Max_deg) deg += 5; Set_deg_fast(deg);break;//turn left
-    default: break;
-  }
 }
 
 //刹车，停车
@@ -123,12 +116,14 @@ void Judge(void){
         if(deg>=Min_deg){
           deg -= 2;
           Set_deg_fast(deg);
-        }Continue_flag = 0;break;
+        }
+        break;
       case 'U':                                         //相机抬头 up
         if(deg<=Max_deg){
           deg += 2;
           Set_deg_fast(deg);
-        }Continue_flag = 0;break;
+        }
+        break;
       case 'S': sensorMode++;sensorMode%=2;break;       //切换距离感应开关 sensor
       default: break;
     }
@@ -178,7 +173,7 @@ double getDistance(){
   digitalWrite(sensorOutputPin, HIGH); // 使发出发出超声波信号接口高电平10μs，这里是至少10μs
   delayMicroseconds(10);
   digitalWrite(sensorOutputPin, LOW); // 保持发出超声波信号接口低电平
-  double distance = pulseIn(sensorInputPin, HIGH, 6); // 读出脉冲时间 上限6ms约为1m
+  double distance = pulseIn(sensorInputPin, HIGH, 60); // 读出脉冲时间 60ms约为10m
   distance= distance/58.0; // 将脉冲时间转化为距离（单位：厘米）
   Serial.println(distance); //输出距离值
   return distance;
