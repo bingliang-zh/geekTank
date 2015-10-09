@@ -130,13 +130,28 @@ void sendOrder(char param){
       break;
     case 'B': break;            //履带刹车 break
     case 'F': break;            //相机复位 focus
-    case 'U': break;            //相机抬头 up
-    case 'D': break;            //相机低头 down
     case 'S': break;            //切换距离感应开关 sensor
+    case ' ': break;            //空白，只亮灯，什么用都没
     default:break;
   }
   Serial.print("\n");
   delay(20);
+}
+
+void sendOrder(char param, int n){
+  Serial.print("CMD");
+  Serial.print(param);
+  switch(param){
+    case 'U':                   //相机抬头 up
+      Serial.print(n);
+      break;
+    case 'D':                   //相机低头 down
+      Serial.print(n);
+      break;
+    default:break;
+  }
+  Serial.print("\n");
+  delay(30);
 }
 
 void setup(){
@@ -162,12 +177,14 @@ void loop(){
   }
   if(isBtnReleased(stickModeBtn)){
     //摇杆模式切换按键
+    sendOrder(' ');
     stickMode++;
     stickMode %= 2;
     delay(200);
   }
   if(isBtnReleased(holdSpeedBtn)){
     //保持匀速按键
+    sendOrder(' ');
     speedMode++;
     speedMode %= 2;
     delay(200);
@@ -195,12 +212,13 @@ void loop(){
     int yValue = analogRead(axisY);
     int diff = yValue - benchmarkY;
     if(diff > allowError){
-      sendOrder('U');
+      diff = 3 * diff / (1023 - benchmarkY);
+      sendOrder('U', diff + 1);
     }else if(diff < -allowError){
-      sendOrder('D');
+      diff = -3 * diff / benchmarkY;
+      sendOrder('D', diff + 1);
     }
   }
-  
   updateBtnValue();
 }
 

@@ -28,7 +28,7 @@ int val;
 unsigned char i=0;
 unsigned char temp=0;
 unsigned char deg = 90;
-int sensorMode = 0;//0为检测距离，1为纯手动
+int sensorMode = 1;//0为检测距离，1为纯手动
 int sensorInputPin = 3;//超声波信号接收接口
 int sensorOutputPin = 2;//超声波信号发射接口
 //履带传输值
@@ -44,14 +44,12 @@ void servopulse(int servopin,int myangle){//定义一个脉冲函数
 }
 
 void Set_deg(unsigned char deg_in){
-  for(int i=0;i<=25;i++) {//保证转到有效角度
+  for(int i=0;i<=5;i++) {//保证转到有效角度
     servopulse(servopin,deg_in);
   }
 }
 void Set_deg_fast(unsigned char deg_in){
-  for(int i=0;i<=2;i++) {//保证转到有效角度
-    servopulse(servopin,deg_in);
-  }
+  servopulse(servopin,deg_in);
 }
 
 void setup(){
@@ -94,11 +92,10 @@ void Brake(){
   digitalWrite(Right_motor_N,LOW);
   digitalWrite(Left_motor_P,LOW);
   digitalWrite(Left_motor_N,LOW);
-}  
-
-String str;
+}
 
 void Judge(void){
+  String str;
   if(Serial.available() > 0){
     str = Serial.readStringUntil('\n');
     Serial.println(str);
@@ -113,20 +110,22 @@ void Judge(void){
       case 'B': Brake();break;                         //履带刹车 break
       case 'F': deg = 90;Set_deg(deg);break;            //相机复位 focus
       case 'D':                                         //相机低头 down
-        if(deg>=Min_deg){
-          deg -= 2;
+        if(str.length()==5 && deg>=Min_deg){
+          deg -= str[4] - '0';
           Set_deg_fast(deg);
         }
         break;
       case 'U':                                         //相机抬头 up
-        if(deg<=Max_deg){
-          deg += 2;
+        if(str.length()==5 && deg<=Max_deg){
+          deg += str[4] - '0';
           Set_deg_fast(deg);
         }
         break;
       case 'S': sensorMode++;sensorMode%=2;break;       //切换距离感应开关 sensor
+      case ' ': break;                                  //只亮灯，什么都不做
       default: break;
     }
+    Serial.println(deg);
   }
 }
 
