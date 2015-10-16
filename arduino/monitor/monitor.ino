@@ -125,13 +125,13 @@ void Judge(void){
       case ' ': break;                                  //只亮灯，什么都不做
       default: break;
     }
-    Serial.println(deg);
   }
 }
 
 void driveTracks(int l, int r){
   if(sensorMode == 0){
-    if(getDistance() < 20.0){
+    double dis = getDistance();
+    if(dis < 20.0 && dis > 0 ){
       Brake();
       return;
     }
@@ -172,8 +172,9 @@ double getDistance(){
   digitalWrite(sensorOutputPin, HIGH); // 使发出发出超声波信号接口高电平10μs，这里是至少10μs
   delayMicroseconds(10);
   digitalWrite(sensorOutputPin, LOW); // 保持发出超声波信号接口低电平
-  double distance = pulseIn(sensorInputPin, HIGH, 60); // 读出脉冲时间 60ms约为10m
+  double distance = pulseIn(sensorInputPin, HIGH); // 读出脉冲时间 60ms约为10m
   distance= distance/58.0; // 将脉冲时间转化为距离（单位：厘米）
+  Serial.print("Distance(cm): ");
   Serial.println(distance); //输出距离值
   return distance;
 }
