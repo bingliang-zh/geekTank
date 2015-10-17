@@ -148,6 +148,12 @@ void sendOrder(char param, int n){
     case 'D':                   //相机低头 down
       Serial.print(n);
       break;
+    case 'M':                   //灯变亮
+      Serial.print(n);
+      break;
+    case 'N':                   //灯变暗
+      Serial.print(n);
+      break;
     default:break;
   }
   Serial.print("\n");
@@ -217,6 +223,15 @@ void loop(){
     }else if(diff < -allowError){
       diff = -3 * diff / benchmarkY;
       sendOrder('D', diff + 1);
+    }
+    int xValue = analogRead(axisX);
+    int diff2 = benchmarkX - xValue;
+    if(diff2 > allowError){
+      diff2 = 7 * diff2 / benchmarkX;
+      sendOrder('M', diff2 + 1);
+    }else if(diff2 < -allowError){
+      diff2 = -7 * diff2 / (1023 - benchmarkX);
+      sendOrder('N', diff2 + 1);
     }
   }
   updateBtnValue();

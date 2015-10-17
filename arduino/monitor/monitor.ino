@@ -17,6 +17,8 @@ int Left_motor_N=6;     //左电机负极
 int Right_motor_P=10;    // 右电机正极
 int Right_motor_N=11;    // 右电机负极
 
+int Light_Pin = 3;           // 点灯PWM正极
+
 #define Max_deg  120
 #define Min_deg  75
 #define Step_deg 2
@@ -28,9 +30,10 @@ int val;
 unsigned char i=0;
 unsigned char temp=0;
 unsigned char deg = 90;
+int brightness = 2;
 int sensorMode = 1;//0为检测距离，1为纯手动
-int sensorInputPin = 3;//超声波信号接收接口
-int sensorOutputPin = 2;//超声波信号发射接口
+int sensorInputPin = 13;//超声波信号接收接口
+int sensorOutputPin = 12;//超声波信号发射接口
 //履带传输值
 int lTrans;
 int rTrans;
@@ -70,6 +73,7 @@ void setup(){
   pinMode(sensorOutputPin, OUTPUT);
   
   Set_deg(deg);
+  analogWrite(Light_Pin, brightness);
   Brake();
   for(i=0;i<4 ;i++)
   {
@@ -119,6 +123,25 @@ void Judge(void){
         if(str.length()==5 && deg<=Max_deg){
           deg += str[4] - '0';
           Set_deg_fast(deg);
+        }
+      case 'M':                                         //调亮
+        if(str.length()==5 && brightness < 255){
+          brightness += str[4] - '0';
+          if (brightness > 255){
+            brightness = 255;
+          }
+          analogWrite(Light_Pin, brightness);
+          Serial.println(brightness);
+        }
+        break;
+      case 'N':                                         //暗
+        if(str.length()==5 && brightness > 0){
+          brightness -= str[4] - '0';
+          if (brightness < 0){
+            brightness = 0;
+          }
+          analogWrite(Light_Pin, brightness);
+          Serial.println(brightness);
         }
         break;
       case 'S': sensorMode++;sensorMode%=2;break;       //切换距离感应开关 sensor
